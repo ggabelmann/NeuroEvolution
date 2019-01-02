@@ -6,7 +6,15 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 /**
- * A stateless neural network.
+ * A stateless neural network that at a high level acts as a function from float[] to float[].
+ *
+ * The network has N nodes in total that are ordered from 0..N-1.
+ * The first ones are Input, the middle ones are Hidden, and the last ones are Output.
+ *
+ * The network has E edges in total that are ordered by their "from" field.
+ * An edge must point from a node to a node that is "greater".
+ *
+ * This is how the neural network is formed.
  */
 public class Network implements UnaryOperator<float[]> {
 
@@ -39,6 +47,7 @@ public class Network implements UnaryOperator<float[]> {
                     working[i] /= 10.0f; // Interpret as a Leaky ReLU, which seems to help converge faster.
                 }
             }
+            // All other activations are treated as NONE.
 
             for (; j < edges.length; j++) {
                 final int from = edges[j].from;
@@ -56,7 +65,9 @@ public class Network implements UnaryOperator<float[]> {
                 }
             }
         }
-
+        
+        // Count the number of Output nodes.
+        // TODO: store as an instant variable.
         int index = 0;
         for (int k = 0; k < nodes.length; k++) {
             if (nodes[k].type == Node.Type.OUTPUT) {
@@ -130,6 +141,7 @@ public class Network implements UnaryOperator<float[]> {
 
         public Edge(final int from, final int to, final float weight) {
             this.from = from;
+            // TODO: ensure that to is greater than from.
             this.to = to;
             this.weight = weight;
         }

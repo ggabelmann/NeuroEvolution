@@ -11,7 +11,13 @@ public class MutateNetwork implements UnaryOperator<Network> {
 
     private final Random random;
     private final DoubleSupplier scale;
-
+    
+    /**
+     * Constructor.
+     *
+     * @param random A source of random values.
+     * @param scale Used to scale a source of random Gaussian values.
+     */
     public MutateNetwork(final Random random, final DoubleSupplier scale) {
         this.random = random;
         this.scale = scale;
@@ -36,13 +42,15 @@ public class MutateNetwork implements UnaryOperator<Network> {
     private Network.Node mutateNode(final Network.Node node) {
         final double factor = scale.getAsDouble();
         if (factor == 0.0) {
+            // If the scaling factor is 0.0 then no mutation can happen.
             return node;
         }
 
         if (node.type == Network.Node.Type.HIDDEN || node.type == Network.Node.Type.OUTPUT) {
-            // Basically, if the bias is above 0 then there is a 55% chance that the mutation
+            // Basically, if the node's bias is above 0 then there is a 55% chance that the mutation
             // will move in the negative direction.
             // And vice-versa.
+            // This is to keep values close to zero.
             final boolean biasAboveZero = node.bias >= 0.0f;
             final boolean tendBack = random.nextFloat() < 0.55f;
 
@@ -62,12 +70,14 @@ public class MutateNetwork implements UnaryOperator<Network> {
     private Network.Edge mutateEdge(final Network.Edge edge) {
         final double factor = scale.getAsDouble();
         if (factor == 0.0) {
+            // If the scaling factor is 0.0 then no mutation can happen.
             return edge;
         }
 
-        // Basically, if the weight is above 0 then there is a 55% chance that the mutation
+        // Basically, if the node's weight is above 0 then there is a 55% chance that the mutation
         // will move in the negative direction.
         // And vice-versa.
+        // This is to keep values close to zero.
         final boolean weightAboveZero = edge.weight >= 0.0f;
         final boolean tendBack = random.nextFloat() < 0.55f;
 

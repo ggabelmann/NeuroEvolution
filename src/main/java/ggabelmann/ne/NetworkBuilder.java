@@ -10,6 +10,7 @@ import java.util.List;
 public class NetworkBuilder {
 
     public static Network singleHiddenLayer(final FloatSupplier floatSupplier, final int input, final int hidden, final int output) {
+        // Build the array of nodes.
         final Network.Node[] nodes = new Network.Node[input + hidden + output];
 
         for (int i = 0; i < input; i++) {
@@ -20,7 +21,7 @@ public class NetworkBuilder {
             nodes[i] = new Network.Node(floatSupplier.getAsFloat(), Network.Node.Type.HIDDEN, Network.Node.Activation.RELU);
         }
 
-        // Now build the edges.
+        // Now build the edges and ensure they point correctly.
         final List<Network.Edge> edges = new ArrayList<>();
 
         for (int i = 0; i < input; i++) {
@@ -28,15 +29,15 @@ public class NetworkBuilder {
                 edges.add(new Network.Edge(i, j, floatSupplier.getAsFloat()));
             }
         }
-        for (int i = input; i < input + hidden; i++) {
-            for (int j = input + hidden; j < input + hidden + output; j++) {
+        for (int i = input; i < input + hidden; i++) { // From all hidden nodes...
+            for (int j = input + hidden; j < input + hidden + output; j++) { // To all output nodes.
                 edges.add(new Network.Edge(i, j, floatSupplier.getAsFloat()));
             }
         }
 
         return new Network(nodes, edges.stream().toArray(Network.Edge[]::new));
     }
-
+    
     public static Network doubleHiddenLayer(final FloatSupplier floatSupplier, final int input, final int firstHidden, final int secondHidden, final int output) {
         final Network.Node[] nodes = new Network.Node[input + firstHidden + secondHidden + output];
 

@@ -1,7 +1,5 @@
 package ggabelmann.ne;
 
-import ggabelmann.ne.Network;
-
 import java.util.function.UnaryOperator;
 
 /**
